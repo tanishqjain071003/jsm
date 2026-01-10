@@ -1,42 +1,26 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCars, createCar } from '@/lib/db'
 import { getAuthToken, verifyToken } from '@/lib/auth'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
-import { nanoid } from 'nanoid'
-
-const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-
-// Ensure upload directory exists
-async function ensureUploadDir() {
-  try {
-    await mkdir(uploadDir, { recursive: true })
-  } catch (error) {
-    // Directory might already exist
-  }
-}
-
-async function saveImage(file: File): Promise<string> {
-  await ensureUploadDir()
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  const filename = `${nanoid()}-${file.name}`
-  const filepath = path.join(uploadDir, filename)
-  await writeFile(filepath, buffer)
-  return `/uploads/${filename}`
-}
+import { saveImage } from '@/lib/blob'
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const statusParam = searchParams.get('status')
-    const filter = {
+    const filter: {
+      search?: string
+      minPrice?: number
+      maxPrice?: number
+      year?: number
+      fuelType?: string
+      status?: 'Available' | 'Sold' | '' | null
+    } = {
       search: searchParams.get('search') || undefined,
       minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
       maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
       year: searchParams.get('year') ? Number(searchParams.get('year')) : undefined,
       fuelType: searchParams.get('fuelType') || undefined,
-      status: statusParam === '' ? '' : (statusParam as 'Available' | 'Sold') || undefined,
+      status: statusParam === '' ? '' : (statusParam === 'Available' || statusParam === 'Sold' ? statusParam : undefined),
     }
 
     const cars = await getCars(filter)

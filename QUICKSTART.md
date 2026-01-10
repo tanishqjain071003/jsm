@@ -17,6 +17,7 @@ MONGODB_URI=mongodb://localhost:27017/jain-shree-motors
 ADMIN_PASSWORD=your-password-here
 JWT_SECRET=change-this-to-a-random-string
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
 ```
 
 **Important:** Replace `your-password-here` with your actual admin password.
@@ -33,13 +34,29 @@ Make sure MongoDB is running on your system.
 - Get your connection string from MongoDB Atlas
 - Update `MONGODB_URI` in `.env.local`
 
-## Step 4: Create Uploads Directory
+## Step 4: Set Up Vercel Blob for Images
 
-The app will create this automatically, but you can create it manually:
-
+**Option A: Using Vercel CLI (Recommended for local dev)**
 ```bash
-mkdir -p public/uploads
+# Install Vercel CLI globally
+npm i -g vercel
+
+# Login to Vercel
+vercel login
+
+# Link your project and pull environment variables
+vercel link
+vercel env pull .env.local
 ```
+
+**Option B: Manual Setup**
+1. Get your Vercel Blob token from Vercel Dashboard
+2. Add it to `.env.local`:
+   ```env
+   BLOB_READ_WRITE_TOKEN=vercel_blob_rw_xxxxxxxxxxxx
+   ```
+
+**Note:** For production deployments on Vercel, the token is automatically available. You only need to set it in your Vercel project's Environment Variables.
 
 ## Step 5: Run the Development Server
 

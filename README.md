@@ -42,12 +42,14 @@ MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/jain-shree-motor
 ADMIN_PASSWORD=your-secure-password-here
 JWT_SECRET=change-this-to-a-random-long-string-at-least-32-characters
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
+BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
 ```
 
 **⚠️ Important:**
 - Replace `your-secure-password-here` with your actual admin password
 - Replace `change-this-to-a-random-long-string...` with a random secret (you can use an online generator or just type random characters)
 - For Atlas: Replace `username`, `password`, and `cluster` with your actual MongoDB Atlas credentials
+- **For Vercel Blob**: Get your token from [Vercel Dashboard](https://vercel.com/dashboard) → Settings → Environment Variables, or use `vercel env pull` command. For local development, you can use `vercel env pull .env.local` or get the token from Vercel dashboard under your project settings.
 
 #### Step 3: Set Up MongoDB
 
@@ -78,13 +80,31 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 7. Go to "Network Access" and add your IP address (or `0.0.0.0/0` for all IPs during development)
 8. Paste the full connection string into `.env.local` as `MONGODB_URI`
 
-#### Step 4: Create Uploads Directory
+#### Step 4: Set Up Vercel Blob (For Image Storage)
 
-The app will create this automatically, but you can create it manually:
+**For Local Development:**
+1. Install Vercel CLI (if not already installed):
+   ```bash
+   npm i -g vercel
+   ```
+2. Login to Vercel:
+   ```bash
+   vercel login
+   ```
+3. Link your project (if deploying to Vercel) and pull environment variables:
+   ```bash
+   vercel link
+   vercel env pull .env.local
+   ```
+   This will automatically add `BLOB_READ_WRITE_TOKEN` to your `.env.local`
 
-```bash
-mkdir -p public/uploads
-```
+**For Production (Vercel Deployment):**
+1. Go to your Vercel project dashboard
+2. Navigate to Settings → Environment Variables
+3. Add `BLOB_READ_WRITE_TOKEN` with your Vercel Blob token
+4. The token is automatically available in Vercel deployments
+
+**Note:** Vercel Blob is free for small projects. Images are stored in Vercel's cloud storage, which is perfect for production deployments.
 
 #### Step 5: Run the Development Server
 
@@ -270,23 +290,31 @@ Create a `.env.local` file with these variables:
 | `ADMIN_PASSWORD` | Password for admin login (plain text) | `mySecurePassword123` |
 | `JWT_SECRET` | Secret key for authentication tokens (use a long random string) | `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6` |
 | `NEXT_PUBLIC_BASE_URL` | Your website URL | `http://localhost:3000` (dev) or `https://yourdomain.com` (prod) |
+| `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token (get from Vercel dashboard) | `vercel_blob_rw_xxx...` |
 
 **Security Note:** Never commit `.env.local` to Git. It's already in `.gitignore`.
 
+**Getting Vercel Blob Token:**
+1. For production: Go to Vercel Dashboard → Your Project → Settings → Environment Variables → Add `BLOB_READ_WRITE_TOKEN`
+2. For local: Run `vercel env pull .env.local` after linking your project, or get the token from Vercel dashboard and add manually
+
 ## Image Storage
 
-Images are currently stored locally in `public/uploads/`. For production, consider:
+Images are stored using **Vercel Blob**, which is a cloud storage solution provided by Vercel. This ensures:
 
-1. **Cloud Storage Options:**
-   - AWS S3
-   - Cloudinary
-   - Vercel Blob Storage
-   - Google Cloud Storage
+- ✅ Images work seamlessly on Vercel deployments
+- ✅ No local file system dependencies
+- ✅ Automatic CDN distribution for fast image loading
+- ✅ Free tier available for small projects
+- ✅ Images are publicly accessible via secure URLs
 
-2. **To implement cloud storage:**
-   - Update `app/api/cars/route.ts` and `app/api/cars/[id]/route.ts`
-   - Replace local file saving with cloud upload
-   - Update image URLs in the database
+**Benefits:**
+- Images are automatically optimized and served via CDN
+- No need to manage file uploads or storage directories
+- Works perfectly with Vercel's serverless functions
+- Images persist across deployments
+
+**Note:** If you need to switch to a different storage provider (like AWS S3 or Cloudinary), update the `saveImage` function in `lib/blob.ts`.
 
 ## Security Notes
 

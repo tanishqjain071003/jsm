@@ -1,30 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getCarById, updateCar, deleteCar } from '@/lib/db'
 import { getAuthToken, verifyToken } from '@/lib/auth'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
-import { nanoid } from 'nanoid'
-// ObjectId imported from mongodb if needed
-
-const uploadDir = path.join(process.cwd(), 'public', 'uploads')
-
-async function ensureUploadDir() {
-  try {
-    await mkdir(uploadDir, { recursive: true })
-  } catch (error) {
-    // Directory might already exist
-  }
-}
-
-async function saveImage(file: File): Promise<string> {
-  await ensureUploadDir()
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-  const filename = `${nanoid()}-${file.name}`
-  const filepath = path.join(uploadDir, filename)
-  await writeFile(filepath, buffer)
-  return `/uploads/${filename}`
-}
+import { saveImage } from '@/lib/blob'
 
 export async function GET(
   request: NextRequest,
