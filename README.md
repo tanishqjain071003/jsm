@@ -99,12 +99,30 @@ BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
    This will automatically add `BLOB_READ_WRITE_TOKEN` to your `.env.local`
 
 **For Production (Vercel Deployment):**
-1. Go to your Vercel project dashboard
-2. Navigate to Settings → Environment Variables
-3. Add `BLOB_READ_WRITE_TOKEN` with your Vercel Blob token
-4. The token is automatically available in Vercel deployments
+1. **Get your Blob Store Token:**
+   - Go to [Vercel Dashboard](https://vercel.com/dashboard) → Settings (your profile) → Tokens
+   - Click "Create Token"
+   - Name it (e.g., "Blob Store Token")
+   - Select **Blob** scope
+   - Click "Create" and **copy the token** (you won't see it again!)
 
-**Note:** Vercel Blob is free for small projects. Images are stored in Vercel's cloud storage, which is perfect for production deployments.
+2. **Add to your project:**
+   - Go to your project in Vercel Dashboard
+   - Navigate to **Settings → Environment Variables**
+   - Click "Add New"
+   - Key: `BLOB_READ_WRITE_TOKEN`
+   - Value: Paste your token
+   - Environment: Select **all** (Production, Preview, Development)
+   - Click "Save"
+
+3. **Redeploy your application:**
+   - Go to Deployments tab
+   - Click the three dots on latest deployment
+   - Click "Redeploy"
+
+**⚠️ Important:** The token must be added to **all environments** (Production, Preview, Development) for it to work.
+
+**Note:** See [VERCEL_SETUP.md](VERCEL_SETUP.md) for detailed step-by-step instructions with screenshots guidance.
 
 #### Step 5: Run the Development Server
 
