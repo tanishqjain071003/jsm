@@ -3,6 +3,9 @@ import { getCars, createCar } from '@/lib/db'
 import { getAuthToken, verifyToken } from '@/lib/auth'
 import { saveImage } from '@/lib/blob'
 
+// Increase timeout for slower mobile connections
+export const maxDuration = 60 // 60 seconds
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
@@ -70,8 +73,16 @@ export async function POST(request: NextRequest) {
     const galleryImages: string[] = []
     for (const file of galleryFiles) {
       if (file && file.size > 0) {
-        const imageUrl = await saveImage(file)
-        galleryImages.push(imageUrl)
+        try {
+          const imageUrl = await saveImage(file)
+          galleryImages.push(imageUrl)
+        } catch (error: any) {
+          console.error('Error uploading gallery image:', error)
+          return NextResponse.json(
+            { error: `Failed to upload gallery image: ${error.message || 'Unknown error'}` },
+            { status: 400 }
+          )
+        }
       }
     }
 
@@ -90,10 +101,36 @@ export async function POST(request: NextRequest) {
     })
 
     return NextResponse.json(car, { status: 201 })
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating car:', error)
+    
+    // Return specific error message to help user understand the issue
+    const errorMessage = error.message || 'Failed to create car'
+    
+    // Check if it's a known error (file size, file type, etc.)
+    if (errorMessage.includes('too large') || errorMessage.includes('size')) {
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 413 } // 413 Payload Too Large
+      )
+    }
+    
+    if (errorMessage.includes('Invalid file type') || errorMessage.includes('type')) {
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 400 } // 400 Bad Request
+      )
+    }
+    
+    if (errorMessage.includes('timeout') || errorMessage.includes('network')) {
+      return NextResponse.json(
+        { error: errorMessage },
+        { status: 408 } // 408 Request Timeout
+      )
+    }
+    
     return NextResponse.json(
-      { error: 'Failed to create car' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

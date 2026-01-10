@@ -293,9 +293,28 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
     }))
   }
 
+  const MAX_FILE_SIZE = 10 * 1024 * 1024 // 10MB in bytes
+
   const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
+      // Check file size
+      if (file.size > MAX_FILE_SIZE) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2)
+        setError(`Main image is too large (${fileSizeMB}MB). Maximum allowed size is 10MB. Please compress the image or use a smaller file.`)
+        e.target.value = '' // Clear the input
+        return
+      }
+
+      // Check file type
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+      if (!validTypes.includes(file.type.toLowerCase())) {
+        setError(`Invalid file type: ${file.type}. Please use JPEG, PNG, WebP, or GIF images only.`)
+        e.target.value = '' // Clear the input
+        return
+      }
+
+      setError('') // Clear any previous errors
       setMainImage(file)
       const reader = new FileReader()
       reader.onloadend = () => {
@@ -307,14 +326,41 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
 
   const handleGalleryChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || [])
-    setGalleryImages(prev => [...prev, ...files])
-    files.forEach(file => {
+    
+    // Validate all files before adding
+    const validFiles: File[] = []
+    for (const file of files) {
+      if (file.size > MAX_FILE_SIZE) {
+        const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2)
+        setError(`Gallery image "${file.name}" is too large (${fileSizeMB}MB). Maximum allowed size is 10MB.`)
+        continue
+      }
+
+      const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif']
+      if (!validTypes.includes(file.type.toLowerCase())) {
+        setError(`Invalid file type for "${file.name}": ${file.type}. Please use JPEG, PNG, WebP, or GIF images only.`)
+        continue
+      }
+
+      validFiles.push(file)
+    }
+
+    if (validFiles.length === 0) {
+      e.target.value = '' // Clear the input
+      return
+    }
+
+    setError('') // Clear any previous errors
+    setGalleryImages(prev => [...prev, ...validFiles])
+    validFiles.forEach(file => {
       const reader = new FileReader()
       reader.onloadend = () => {
         setGalleryPreviews(prev => [...prev, reader.result as string])
       }
       reader.readAsDataURL(file)
     })
+    
+    e.target.value = '' // Clear the input after processing
   }
 
   const removeGalleryImage = (index: number) => {
@@ -364,7 +410,8 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         })
 
         if (!response.ok) {
-          throw new Error('Failed to update car')
+          const errorData = await response.json().catch(() => ({ error: 'Failed to update car' }))
+          throw new Error(errorData.error || 'Failed to update car')
         }
       } else {
         // Create
@@ -384,7 +431,8 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         })
 
         if (!response.ok) {
-          throw new Error('Failed to create car')
+          const errorData = await response.json().catch(() => ({ error: 'Failed to create car' }))
+          throw new Error(errorData.error || 'Failed to create car')
         }
       }
 
@@ -547,10 +595,13 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
           type="file"
           id="mainImage"
           name="mainImage"
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
           onChange={handleMainImageChange}
           required={!car}
         />
+        <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+          Maximum file size: 10MB. Supported formats: JPEG, PNG, WebP, GIF
+        </small>
         {mainImagePreview && (
           <div className="image-preview">
             <div className="preview-image">
@@ -567,10 +618,13 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
           type="file"
           id="galleryImages"
           name="galleryImages"
-          accept="image/*"
+          accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
           multiple
           onChange={handleGalleryChange}
         />
+        <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+          Maximum file size: 10MB per image. Supported formats: JPEG, PNG, WebP, GIF
+        </small>
         {(existingGallery.length > 0 || galleryPreviews.length > 0) && (
           <div className="image-preview">
             {existingGallery.map((image, index) => (

@@ -3,6 +3,9 @@ import { getCarById, updateCar, deleteCar } from '@/lib/db'
 import { getAuthToken, verifyToken } from '@/lib/auth'
 import { saveImage } from '@/lib/blob'
 
+// Increase timeout for slower mobile connections
+export const maxDuration = 60 // 60 seconds
+
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
