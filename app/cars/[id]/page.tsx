@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Car } from '@/lib/db'
@@ -12,13 +12,7 @@ export default function CarDetailPage() {
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState('')
 
-  useEffect(() => {
-    if (params.id) {
-      fetchCar()
-    }
-  }, [params.id])
-
-  const fetchCar = async () => {
+  const fetchCar = useCallback(async () => {
     try {
       const response = await fetch(`/api/cars/${params.id}`)
       if (response.ok) {
@@ -34,7 +28,13 @@ export default function CarDetailPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [params.id, router])
+
+  useEffect(() => {
+    if (params.id) {
+      fetchCar()
+    }
+  }, [params.id, fetchCar])
 
   if (loading) {
     return (
@@ -73,6 +73,7 @@ export default function CarDetailPage() {
         </Link>
 
         <div className="image-gallery">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={selectedImage || car.mainImage}
             alt={car.name}
@@ -81,8 +82,10 @@ export default function CarDetailPage() {
               e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="800" height="500"%3E%3Crect fill="%23e5e7eb" width="800" height="500"/%3E%3Ctext fill="%23999" font-family="sans-serif" font-size="24" dy="10.5" font-weight="bold" x="50%25" y="50%25" text-anchor="middle"%3ENo Image%3C/text%3E%3C/svg%3E'
             }}
           />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           {allImages.length > 1 && (
             <div className="gallery-images">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               {allImages.map((image, index) => (
                 <img
                   key={index}

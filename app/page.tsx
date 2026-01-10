@@ -1,8 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
 import { Car } from '@/lib/db'
 
 export default function Home() {
@@ -16,11 +15,7 @@ export default function Home() {
     fuelType: '',
   })
 
-  useEffect(() => {
-    fetchCars()
-  }, [filters])
-
-  const fetchCars = async () => {
+  const fetchCars = useCallback(async () => {
     setLoading(true)
     try {
       const params = new URLSearchParams()
@@ -38,7 +33,11 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [filters])
+
+  useEffect(() => {
+    fetchCars()
+  }, [fetchCars])
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }))
@@ -131,6 +130,7 @@ export default function Home() {
             {cars.map((car) => (
               <Link key={car._id} href={`/cars/${car._id}`}>
                 <div className="car-card">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={car.mainImage || '/placeholder-car.jpg'}
                     alt={car.name}

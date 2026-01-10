@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Car } from '@/lib/db'
 import Link from 'next/link'
@@ -14,17 +14,7 @@ export default function AdminDashboard() {
   const [editingCar, setEditingCar] = useState<Car | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
 
-  useEffect(() => {
-    checkAuth()
-  }, [])
-
-  useEffect(() => {
-    if (authenticated) {
-      fetchCars()
-    }
-  }, [authenticated])
-
-  const checkAuth = async () => {
+  const checkAuth = useCallback(async () => {
     try {
       const response = await fetch('/api/auth/check')
       const data = await response.json()
@@ -36,9 +26,9 @@ export default function AdminDashboard() {
     } catch (error) {
       router.push('/admin/login')
     }
-  }
+  }, [router])
 
-  const fetchCars = async () => {
+  const fetchCars = useCallback(async () => {
     try {
       const response = await fetch('/api/cars?status=')
       const data = await response.json()
@@ -53,7 +43,17 @@ export default function AdminDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
+
+  useEffect(() => {
+    checkAuth()
+  }, [checkAuth])
+
+  useEffect(() => {
+    if (authenticated) {
+      fetchCars()
+    }
+  }, [authenticated, fetchCars])
 
   const handleLogout = async () => {
     try {
@@ -135,11 +135,12 @@ export default function AdminDashboard() {
           <div className="cars-list">
             {cars.length === 0 ? (
               <div className="empty-state" style={{ padding: '2rem' }}>
-                <p>No cars added yet. Click "Add New Car" to get started.</p>
+                <p>No cars added yet. Click &quot;Add New Car&quot; to get started.</p>
               </div>
             ) : (
               cars.map((car) => (
                 <div key={car._id} className="car-list-item">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={car.mainImage || '/placeholder-car.jpg'}
                     alt={car.name}
@@ -553,6 +554,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         {mainImagePreview && (
           <div className="image-preview">
             <div className="preview-image">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={mainImagePreview} alt="Preview" />
             </div>
           </div>
@@ -573,6 +575,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
           <div className="image-preview">
             {existingGallery.map((image, index) => (
               <div key={`existing-${image}-${index}`} className="preview-image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={image} alt={`Gallery ${index + 1}`} onError={(e) => {
                   e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Crect fill="%23e5e7eb" width="150" height="150"/%3E%3C/svg%3E'
                 }} />
@@ -587,6 +590,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
             ))}
             {galleryPreviews.map((preview, index) => (
               <div key={`new-${index}`} className="preview-image">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={preview} alt={`New ${index + 1}`} onError={(e) => {
                   e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="150" height="150"%3E%3Crect fill="%23e5e7eb" width="150" height="150"/%3E%3C/svg%3E'
                 }} />
