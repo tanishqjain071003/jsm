@@ -11,6 +11,7 @@ export default function CarDetailPage() {
   const [car, setCar] = useState<Car | null>(null)
   const [loading, setLoading] = useState(true)
   const [selectedImage, setSelectedImage] = useState('')
+  const [logo, setLogo] = useState<any>(null)
 
   const fetchCar = useCallback(async () => {
     try {
@@ -30,11 +31,22 @@ export default function CarDetailPage() {
     }
   }, [params.id, router])
 
+  const fetchLogo = useCallback(async () => {
+    try {
+      const response = await fetch('/api/logo')
+      const data = await response.json()
+      setLogo(data)
+    } catch (error) {
+      console.error('Error fetching logo:', error)
+    }
+  }, [])
+
   useEffect(() => {
     if (params.id) {
       fetchCar()
     }
-  }, [params.id, fetchCar])
+    fetchLogo()
+  }, [params.id, fetchCar, fetchLogo])
 
   if (loading) {
     return (
@@ -62,14 +74,25 @@ export default function CarDetailPage() {
       <header className="header">
         <div className="header-content">
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
-            <img 
-              src="/logo.png" 
-              alt="Jain Shree Motors Logo" 
-              className="logo-image"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
-            />
+            {logo?.imageUrl ? (
+              <img 
+                src={logo.imageUrl} 
+                alt="Jain Shree Motors Logo" 
+                className="logo-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              <img 
+                src="/logo.png" 
+                alt="Jain Shree Motors Logo" 
+                className="logo-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            )}
             <span className="logo">Jain Shree Motors</span>
           </Link>
         </div>

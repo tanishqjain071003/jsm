@@ -16,6 +16,8 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<'cars' | 'shop'>('cars')
   const [shopPhotos, setShopPhotos] = useState<any[]>([])
   const [showShopPhotoForm, setShowShopPhotoForm] = useState(false)
+  const [logo, setLogo] = useState<any>(null)
+  const [showLogoForm, setShowLogoForm] = useState(false)
 
   const checkAuth = useCallback(async () => {
     try {
@@ -62,12 +64,23 @@ export default function AdminDashboard() {
     }
   }, [])
 
+  const fetchLogo = useCallback(async () => {
+    try {
+      const response = await fetch('/api/logo')
+      const data = await response.json()
+      setLogo(data)
+    } catch (error) {
+      console.error('Error fetching logo:', error)
+    }
+  }, [])
+
   useEffect(() => {
     if (authenticated) {
       fetchCars()
       fetchShopPhotos()
+      fetchLogo()
     }
-  }, [authenticated, fetchCars, fetchShopPhotos])
+  }, [authenticated, fetchCars, fetchShopPhotos, fetchLogo])
 
   const handleLogout = async () => {
     try {
@@ -105,14 +118,25 @@ export default function AdminDashboard() {
       <header className="header">
         <div className="header-content">
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
-            <img 
-              src="/logo.png" 
-              alt="Jain Shree Motors Logo" 
-              className="logo-image"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
-            />
+            {logo?.imageUrl ? (
+              <img 
+                src={logo.imageUrl} 
+                alt="Jain Shree Motors Logo" 
+                className="logo-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              <img 
+                src="/logo.png" 
+                alt="Jain Shree Motors Logo" 
+                className="logo-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            )}
             <span className="logo">Jain Shree Motors - Admin</span>
           </Link>
           <button onClick={handleLogout} className="button button-secondary">
@@ -167,12 +191,20 @@ export default function AdminDashboard() {
               </button>
             )}
             {activeTab === 'shop' && (
-              <button
-                onClick={() => setShowShopPhotoForm(true)}
-                className="button button-primary"
-              >
-                + Add Shop Photo
-              </button>
+              <div style={{ display: 'flex', gap: '0.75rem' }}>
+                <button
+                  onClick={() => setShowLogoForm(true)}
+                  className="button button-primary"
+                >
+                  {logo ? 'Update Logo' : 'Add Logo'}
+                </button>
+                <button
+                  onClick={() => setShowShopPhotoForm(true)}
+                  className="button button-primary"
+                >
+                  + Add Shop Photo
+                </button>
+              </div>
             )}
           </div>
         </div>
@@ -183,6 +215,11 @@ export default function AdminDashboard() {
             onRefresh={fetchShopPhotos}
             showForm={showShopPhotoForm}
             onCloseForm={() => setShowShopPhotoForm(false)}
+            logo={logo}
+            onLogoRefresh={fetchLogo}
+            showLogoForm={showLogoForm}
+            onCloseLogoForm={() => setShowLogoForm(false)}
+            onOpenLogoForm={() => setShowLogoForm(true)}
           />
         )}
 
@@ -309,15 +346,23 @@ export default function AdminDashboard() {
   )
 }
 
-function ShopPhotosSection({ photos, onRefresh, showForm, onCloseForm }: { 
+function ShopPhotosSection({ photos, onRefresh, showForm, onCloseForm, logo, onLogoRefresh, showLogoForm, onCloseLogoForm, onOpenLogoForm }: { 
   photos: any[]
   onRefresh: () => void
   showForm: boolean
   onCloseForm: () => void
+  logo: any
+  onLogoRefresh: () => void
+  showLogoForm: boolean
+  onCloseLogoForm: () => void
+  onOpenLogoForm: () => void
 }) {
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [deleteLogoConfirm, setDeleteLogoConfirm] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [logoLoading, setLogoLoading] = useState(false)
   const [error, setError] = useState('')
+  const [logoError, setLogoError] = useState('')
 
   const handleDelete = async (id: string) => {
     try {
@@ -375,8 +420,155 @@ function ShopPhotosSection({ photos, onRefresh, showForm, onCloseForm }: {
     }
   }
 
+  const handleLogoUpload = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setLogoError('')
+    setLogoLoading(true)
+
+    try {
+      const formData = new FormData(e.currentTarget)
+      const imageFile = formData.get('image') as File
+
+      if (!imageFile || imageFile.size === 0) {
+        setLogoError('Please select an image')
+        setLogoLoading(false)
+        return
+      }
+
+      const uploadData = new FormData()
+      uploadData.append('image', imageFile)
+
+      const response = await fetch('/api/logo', {
+        method: 'POST',
+        body: uploadData,
+      })
+
+      if (response.ok) {
+        onLogoRefresh()
+        onCloseLogoForm()
+        e.currentTarget.reset()
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to upload logo' }))
+        setLogoError(errorData.error || 'Failed to upload logo')
+      }
+    } catch (error: any) {
+      setLogoError(error.message || 'Something went wrong')
+    } finally {
+      setLogoLoading(false)
+    }
+  }
+
+  const handleDeleteLogo = async () => {
+    try {
+      const response = await fetch('/api/logo', {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        onLogoRefresh()
+        setDeleteLogoConfirm(false)
+      } else {
+        alert('Failed to delete logo')
+      }
+    } catch (error) {
+      console.error('Error deleting logo:', error)
+      alert('Failed to delete logo')
+    }
+  }
+
   return (
     <>
+      {/* Logo Management */}
+      <div style={{ marginBottom: '3rem' }}>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 700 }}>Logo Management</h2>
+        
+        {showLogoForm && (
+          <form onSubmit={handleLogoUpload} className="form-group" style={{ marginBottom: '2rem' }}>
+            <h3 style={{ marginBottom: '1.5rem' }}>{logo ? 'Update Logo' : 'Add Logo'}</h3>
+            {logoError && (
+              <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>
+                {logoError}
+              </div>
+            )}
+            <div style={{ marginBottom: '1rem' }}>
+              <label htmlFor="logoImage">Logo Image *</label>
+              <input
+                type="file"
+                id="logoImage"
+                name="image"
+                accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+                required
+              />
+              <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+                Maximum file size: 10MB. Supported formats: JPEG, PNG, WebP, GIF. Recommended: PNG with transparent background.
+              </small>
+            </div>
+            <div className="form-actions">
+              <button type="submit" className="button button-primary" disabled={logoLoading}>
+                {logoLoading ? 'Uploading...' : logo ? 'Update Logo' : 'Add Logo'}
+              </button>
+              <button type="button" onClick={onCloseLogoForm} className="button button-secondary">
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        {logo && (
+          <div style={{ 
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+            padding: '2rem', 
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            border: '2px solid #e2e8f0',
+            display: 'inline-block'
+          }}>
+            <div style={{ marginBottom: '1rem' }}>
+              <h4 style={{ marginBottom: '0.5rem', fontSize: '1rem', fontWeight: 600 }}>Current Logo</h4>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logo.imageUrl}
+                alt="Current Logo"
+                style={{ maxHeight: '100px', maxWidth: '300px', objectFit: 'contain', borderRadius: '8px' }}
+                onError={(e) => {
+                  e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="100"%3E%3Crect fill="%23e5e7eb" width="300" height="100"/%3E%3C/svg%3E'
+                }}
+              />
+            </div>
+            <button
+              onClick={() => setDeleteLogoConfirm(true)}
+              className="button button-danger button-small"
+            >
+              Delete Logo
+            </button>
+          </div>
+        )}
+
+        {!logo && !showLogoForm && (
+          <div style={{ 
+            background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+            padding: '2rem', 
+            borderRadius: '16px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
+            border: '2px solid #e2e8f0',
+            textAlign: 'center'
+          }}>
+            <p style={{ color: '#666', marginBottom: '1rem' }}>No logo uploaded yet.</p>
+            <button
+              onClick={onOpenLogoForm}
+              className="button button-primary"
+            >
+              Add Logo
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Shop Photos Section */}
+      <div style={{ marginBottom: '2rem' }}>
+        <h2 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 700 }}>Shop Photos</h2>
+      </div>
+
       {showForm && (
         <form onSubmit={handleAddPhoto} className="form-group" style={{ marginBottom: '2rem' }}>
           <h2 style={{ marginBottom: '1.5rem' }}>Add Shop Photo</h2>
@@ -477,6 +669,53 @@ function ShopPhotosSection({ photos, onRefresh, showForm, onCloseForm }: {
               </button>
               <button
                 onClick={() => setDeleteConfirm(null)}
+                className="button button-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Logo Confirmation */}
+      {deleteLogoConfirm && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '2rem',
+              borderRadius: '12px',
+              maxWidth: '400px',
+              margin: '1rem',
+            }}
+          >
+            <h2 style={{ marginBottom: '1rem' }}>Confirm Delete</h2>
+            <p style={{ marginBottom: '1.5rem', color: '#666' }}>
+              Are you sure you want to delete the logo?
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button
+                onClick={handleDeleteLogo}
+                className="button button-danger"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeleteLogoConfirm(false)}
                 className="button button-secondary"
               >
                 Cancel

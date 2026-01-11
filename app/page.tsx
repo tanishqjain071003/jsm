@@ -9,6 +9,7 @@ export default function Home() {
   const [cars, setCars] = useState<Car[]>([])
   const [loading, setLoading] = useState(true)
   const [shopPhotos, setShopPhotos] = useState<any[]>([])
+  const [logo, setLogo] = useState<any>(null)
   const [filters, setFilters] = useState({
     search: '',
     maxPrice: '',
@@ -47,9 +48,20 @@ export default function Home() {
     }
   }, [])
 
+  const fetchLogo = useCallback(async () => {
+    try {
+      const response = await fetch('/api/logo')
+      const data = await response.json()
+      setLogo(data)
+    } catch (error) {
+      console.error('Error fetching logo:', error)
+    }
+  }, [])
+
   useEffect(() => {
     fetchShopPhotos()
-  }, [fetchShopPhotos])
+    fetchLogo()
+  }, [fetchShopPhotos, fetchLogo])
 
   useEffect(() => {
     fetchCars()
@@ -70,14 +82,25 @@ export default function Home() {
       <header className="header">
         <div className="header-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-            <img 
-              src="/logo.png" 
-              alt="Jain Shree Motors Logo" 
-              className="logo-image"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
-            />
+            {logo?.imageUrl ? (
+              <img 
+                src={logo.imageUrl} 
+                alt="Jain Shree Motors Logo" 
+                className="logo-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            ) : (
+              <img 
+                src="/logo.png" 
+                alt="Jain Shree Motors Logo" 
+                className="logo-image"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none'
+                }}
+              />
+            )}
             <div>
               <h1 className="logo" style={{ margin: 0, fontSize: '1.5rem' }}>Jain Shree Motors</h1>
               <div style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem' }}>
