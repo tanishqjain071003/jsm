@@ -43,6 +43,7 @@ ADMIN_PASSWORD=your-secure-password-here
 JWT_SECRET=change-this-to-a-random-long-string-at-least-32-characters
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
+NEXT_PUBLIC_SHOP_LOCATION=Your Shop Address, City, State
 ```
 
 **⚠️ Important:**
@@ -309,6 +310,7 @@ Create a `.env.local` file with these variables:
 | `JWT_SECRET` | Secret key for authentication tokens (use a long random string) | `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6` |
 | `NEXT_PUBLIC_BASE_URL` | Your website URL | `http://localhost:3000` (dev) or `https://yourdomain.com` (prod) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token (get from Vercel dashboard) | `vercel_blob_rw_xxx...` |
+| `NEXT_PUBLIC_SHOP_LOCATION` | Shop address for Google Maps link | `123 Main Street, City, State` |
 
 **Security Note:** Never commit `.env.local` to Git. It's already in `.gitignore`.
 

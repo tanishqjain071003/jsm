@@ -13,6 +13,9 @@ export default function AdminDashboard() {
   const [showForm, setShowForm] = useState(false)
   const [editingCar, setEditingCar] = useState<Car | null>(null)
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'cars' | 'shop'>('cars')
+  const [shopPhotos, setShopPhotos] = useState<any[]>([])
+  const [showShopPhotoForm, setShowShopPhotoForm] = useState(false)
 
   const checkAuth = useCallback(async () => {
     try {
@@ -49,11 +52,22 @@ export default function AdminDashboard() {
     checkAuth()
   }, [checkAuth])
 
+  const fetchShopPhotos = useCallback(async () => {
+    try {
+      const response = await fetch('/api/shop-photos')
+      const data = await response.json()
+      setShopPhotos(data)
+    } catch (error) {
+      console.error('Error fetching shop photos:', error)
+    }
+  }, [])
+
   useEffect(() => {
     if (authenticated) {
       fetchCars()
+      fetchShopPhotos()
     }
-  }, [authenticated, fetchCars])
+  }, [authenticated, fetchCars, fetchShopPhotos])
 
   const handleLogout = async () => {
     try {
@@ -101,19 +115,72 @@ export default function AdminDashboard() {
 
       <div className="admin-container">
         <div className="admin-header">
-          <h1 className="admin-title">Car Management</h1>
-          <button
-            onClick={() => {
-              setEditingCar(null)
-              setShowForm(true)
-            }}
-            className="button button-primary"
-          >
-            + Add New Car
-          </button>
+          <h1 className="admin-title">Admin Dashboard</h1>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: '0.5rem', background: '#f5f5f5', padding: '0.25rem', borderRadius: '8px' }}>
+              <button
+                onClick={() => setActiveTab('cars')}
+                className="button"
+                style={{
+                  background: activeTab === 'cars' ? '#2563eb' : 'transparent',
+                  color: activeTab === 'cars' ? 'white' : '#666',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Cars
+              </button>
+              <button
+                onClick={() => setActiveTab('shop')}
+                className="button"
+                style={{
+                  background: activeTab === 'shop' ? '#2563eb' : 'transparent',
+                  color: activeTab === 'shop' ? 'white' : '#666',
+                  border: 'none',
+                  padding: '0.5rem 1rem',
+                  borderRadius: '6px',
+                  cursor: 'pointer'
+                }}
+              >
+                Shop Photos
+              </button>
+            </div>
+            {activeTab === 'cars' && (
+              <button
+                onClick={() => {
+                  setEditingCar(null)
+                  setShowForm(true)
+                }}
+                className="button button-primary"
+              >
+                + Add New Car
+              </button>
+            )}
+            {activeTab === 'shop' && (
+              <button
+                onClick={() => setShowShopPhotoForm(true)}
+                className="button button-primary"
+              >
+                + Add Shop Photo
+              </button>
+            )}
+          </div>
         </div>
 
-        {showForm && (
+        {activeTab === 'shop' && (
+          <ShopPhotosSection
+            photos={shopPhotos}
+            onRefresh={fetchShopPhotos}
+            showForm={showShopPhotoForm}
+            onCloseForm={() => setShowShopPhotoForm(false)}
+          />
+        )}
+
+        {activeTab === 'cars' && (
+          <>
+            {showForm && (
         <CarForm
           key={editingCar?._id || 'new'}
           car={editingCar}
@@ -227,7 +294,189 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
+          </>
+        )}
       </div>
+    </>
+  )
+}
+
+function ShopPhotosSection({ photos, onRefresh, showForm, onCloseForm }: { 
+  photos: any[]
+  onRefresh: () => void
+  showForm: boolean
+  onCloseForm: () => void
+}) {
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`/api/shop-photos/${id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        onRefresh()
+        setDeleteConfirm(null)
+      } else {
+        alert('Failed to delete photo')
+      }
+    } catch (error) {
+      console.error('Error deleting photo:', error)
+      alert('Failed to delete photo')
+    }
+  }
+
+  const handleAddPhoto = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setError('')
+    setLoading(true)
+
+    try {
+      const formData = new FormData(e.currentTarget)
+      const imageFile = formData.get('image') as File
+
+      if (!imageFile || imageFile.size === 0) {
+        setError('Please select an image')
+        setLoading(false)
+        return
+      }
+
+      const uploadData = new FormData()
+      uploadData.append('image', imageFile)
+
+      const response = await fetch('/api/shop-photos', {
+        method: 'POST',
+        body: uploadData,
+      })
+
+      if (response.ok) {
+        onRefresh()
+        onCloseForm()
+        e.currentTarget.reset()
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Failed to upload photo' }))
+        setError(errorData.error || 'Failed to upload photo')
+      }
+    } catch (error: any) {
+      setError(error.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <>
+      {showForm && (
+        <form onSubmit={handleAddPhoto} className="form-group" style={{ marginBottom: '2rem' }}>
+          <h2 style={{ marginBottom: '1.5rem' }}>Add Shop Photo</h2>
+          {error && (
+            <div style={{ backgroundColor: '#fee2e2', color: '#991b1b', padding: '0.75rem', borderRadius: '6px', marginBottom: '1rem' }}>
+              {error}
+            </div>
+          )}
+          <div style={{ marginBottom: '1rem' }}>
+            <label htmlFor="shopImage">Shop Photo *</label>
+            <input
+              type="file"
+              id="shopImage"
+              name="image"
+              accept="image/jpeg,image/jpg,image/png,image/webp,image/gif"
+              required
+            />
+            <small style={{ display: 'block', marginTop: '0.25rem', color: '#666' }}>
+              Maximum file size: 10MB. Supported formats: JPEG, PNG, WebP, GIF
+            </small>
+          </div>
+          <div className="form-actions">
+            <button type="submit" className="button button-primary" disabled={loading}>
+              {loading ? 'Uploading...' : 'Add Photo'}
+            </button>
+            <button type="button" onClick={onCloseForm} className="button button-secondary">
+              Cancel
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="cars-list">
+        {photos.length === 0 ? (
+          <div className="empty-state" style={{ padding: '2rem' }}>
+            <p>No shop photos added yet. Click &quot;Add Shop Photo&quot; to get started.</p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+            {photos.map((photo) => (
+              <div key={photo._id} style={{ position: 'relative', background: '#fff', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={photo.imageUrl}
+                  alt="Shop photo"
+                  style={{ width: '100%', height: '200px', objectFit: 'cover' }}
+                  onError={(e) => {
+                    e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="200" height="200"%3E%3Crect fill="%23e5e7eb" width="200" height="200"/%3E%3C/svg%3E'
+                  }}
+                />
+                <button
+                  onClick={() => setDeleteConfirm(photo._id)}
+                  className="button button-danger button-small"
+                  style={{ width: '100%', marginTop: '0.5rem', borderRadius: '0 0 8px 8px' }}
+                >
+                  Delete
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {deleteConfirm && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              padding: '2rem',
+              borderRadius: '12px',
+              maxWidth: '400px',
+              margin: '1rem',
+            }}
+          >
+            <h2 style={{ marginBottom: '1rem' }}>Confirm Delete</h2>
+            <p style={{ marginBottom: '1.5rem', color: '#666' }}>
+              Are you sure you want to delete this shop photo?
+            </p>
+            <div style={{ display: 'flex', gap: '1rem' }}>
+              <button
+                onClick={() => handleDelete(deleteConfirm)}
+                className="button button-danger"
+              >
+                Delete
+              </button>
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="button button-secondary"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   )
 }
@@ -247,6 +496,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
     color: car?.color || '',
     insuranceType: car?.insuranceType || 'No insurance',
     enginePower: car?.enginePower || 0,
+    variant: car?.variant || '',
   })
   const [mainImage, setMainImage] = useState<File | null>(null)
   const [galleryImages, setGalleryImages] = useState<File[]>([])
@@ -273,6 +523,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         color: car.color || '',
         insuranceType: car.insuranceType || 'No insurance',
         enginePower: car.enginePower || 0,
+        variant: car.variant || '',
       })
       setMainImagePreview(car.mainImage)
       setExistingGallery(car.galleryImages || [])
@@ -291,6 +542,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         color: '',
         insuranceType: 'No insurance',
         enginePower: 0,
+        variant: '',
       })
       setMainImagePreview('')
       setExistingGallery([])
@@ -412,6 +664,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
       formDataToSend.append('color', formData.color)
       formDataToSend.append('insuranceType', formData.insuranceType)
       formDataToSend.append('enginePower', formData.enginePower.toString())
+      formDataToSend.append('variant', formData.variant)
 
       if (car?._id) {
         // Update
@@ -643,6 +896,18 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
             onChange={handleInputChange}
             min="0"
             placeholder="e.g., 1200"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="variant">Variant</label>
+          <input
+            type="text"
+            id="variant"
+            name="variant"
+            value={formData.variant}
+            onChange={handleInputChange}
+            placeholder="e.g., VX, ZX, Base Model"
           />
         </div>
       </div>

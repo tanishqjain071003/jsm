@@ -47,7 +47,7 @@ export async function PUT(
       name: formData.get('name') as string,
       brand: formData.get('brand') as string,
       year: Number(formData.get('year')),
-      fuelType: formData.get('fuelType') as 'Petrol' | 'Diesel' | 'Electric' | 'Hybrid',
+      fuelType: formData.get('fuelType') as 'Petrol' | 'Diesel' | 'Electric' | 'Hybrid' | 'CNG',
       transmission: formData.get('transmission') as 'Manual' | 'Automatic',
       mileage: Number(formData.get('mileage')),
       price: Number(formData.get('price')),
@@ -57,6 +57,7 @@ export async function PUT(
       color: formData.get('color') as string,
       insuranceType: formData.get('insuranceType') as 'Comprehensive' | 'No insurance' | 'Third party' | 'Zero Dep',
       enginePower: Number(formData.get('enginePower')),
+      variant: formData.get('variant') as string,
     }
 
     const mainImageFile = formData.get('mainImage') as File

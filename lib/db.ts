@@ -6,7 +6,8 @@ export interface Car {
   name: string
   brand: string
   year: number
-  fuelType: 'Petrol' | 'Diesel' | 'Electric' | 'Hybrid'
+  fuelType: 'Petrol' | 'Diesel' | 'Electric' | 'Hybrid' | 'CNG'
+  variant: string
   transmission: 'Manual' | 'Automatic'
   mileage: number
   price: number

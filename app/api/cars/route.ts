@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     const name = formData.get('name') as string
     const brand = formData.get('brand') as string
     const year = Number(formData.get('year'))
-    const fuelType = formData.get('fuelType') as 'Petrol' | 'Diesel' | 'Electric' | 'Hybrid'
+    const fuelType = formData.get('fuelType') as 'Petrol' | 'Diesel' | 'Electric' | 'Hybrid' | 'CNG'
     const transmission = formData.get('transmission') as 'Manual' | 'Automatic'
     const mileage = Number(formData.get('mileage'))
     const price = Number(formData.get('price'))
@@ -62,6 +62,7 @@ export async function POST(request: NextRequest) {
     const color = formData.get('color') as string
     const insuranceType = formData.get('insuranceType') as 'Comprehensive' | 'No insurance' | 'Third party' | 'Zero Dep'
     const enginePower = Number(formData.get('enginePower'))
+    const variant = formData.get('variant') as string
 
     const mainImageFile = formData.get('mainImage') as File
     if (!mainImageFile || mainImageFile.size === 0) {
@@ -106,6 +107,7 @@ export async function POST(request: NextRequest) {
       color: color || '',
       insuranceType: insuranceType || 'No insurance',
       enginePower: enginePower || 0,
+      variant: variant || '',
     })
 
     return NextResponse.json(car, { status: 201 })

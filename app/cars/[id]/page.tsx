@@ -155,6 +155,12 @@ export default function CarDetailPage() {
                 <span className="spec-value">{car.enginePower} cc</span>
               </div>
             )}
+            {car.variant && (
+              <div className="spec-item">
+                <span className="spec-label">Variant</span>
+                <span className="spec-value">{car.variant}</span>
+              </div>
+            )}
           </div>
 
           {car.description && (
@@ -173,14 +179,38 @@ export default function CarDetailPage() {
           marginTop: '2rem',
           textAlign: 'center'
         }}>
-          <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>Contact Us</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
-            <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
-              📞 +91 9826452400
-            </a>
-            <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
-              📞 +91 9827028266
-            </a>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Interested in this car?</h3>
+          <a
+            href={`https://wa.me/919826452400?text=${encodeURIComponent(`I want to enquire about ${car.name}${car.variant ? ' ' + car.variant : ''} ${car.year} car.`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-block',
+              backgroundColor: '#25D366',
+              color: 'white',
+              padding: '1rem 2rem',
+              borderRadius: '8px',
+              textDecoration: 'none',
+              fontSize: '1.125rem',
+              fontWeight: 600,
+              marginBottom: '1.5rem',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#20BA5A'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#25D366'}
+          >
+            💬 WhatsApp Us
+          </a>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
+            <h4 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Or Call Us</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
+              <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+                📞 +91 9826452400
+              </a>
+              <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+                📞 +91 9827028266
+              </a>
+            </div>
           </div>
         </div>
       </div>
