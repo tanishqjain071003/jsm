@@ -104,8 +104,16 @@ export default function AdminDashboard() {
     <>
       <header className="header">
         <div className="header-content">
-          <Link href="/" className="logo">
-            Jain Shree Motors - Admin
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
+            <img 
+              src="/logo.png" 
+              alt="Jain Shree Motors Logo" 
+              className="logo-image"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+            <span className="logo">Jain Shree Motors - Admin</span>
           </Link>
           <button onClick={handleLogout} className="button button-secondary">
             Logout

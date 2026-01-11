@@ -61,8 +61,16 @@ export default function CarDetailPage() {
     <>
       <header className="header">
         <div className="header-content">
-          <Link href="/" className="logo">
-            Jain Shree Motors
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
+            <img 
+              src="/logo.png" 
+              alt="Jain Shree Motors Logo" 
+              className="logo-image"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+            <span className="logo">Jain Shree Motors</span>
           </Link>
         </div>
       </header>
@@ -172,42 +180,60 @@ export default function CarDetailPage() {
         </div>
 
         <div style={{ 
-          background: '#fff', 
-          padding: '2rem', 
-          borderRadius: '12px', 
-          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+          padding: '2.5rem', 
+          borderRadius: '20px', 
+          boxShadow: '0 8px 24px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.06)',
           marginTop: '2rem',
-          textAlign: 'center'
+          textAlign: 'center',
+          border: '2px solid #e2e8f0',
+          position: 'relative',
+          overflow: 'hidden'
         }}>
-          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem' }}>Interested in this car?</h3>
+          <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '5px', background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)' }}></div>
+          <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 700, color: '#1e293b' }}>Interested in this car?</h3>
           <a
             href={`https://wa.me/919826452400?text=${encodeURIComponent(`I want to enquire about ${car.name}${car.variant ? ' ' + car.variant : ''} ${car.year} car.`)}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{
               display: 'inline-block',
-              backgroundColor: '#25D366',
+              background: 'linear-gradient(135deg, #25D366 0%, #20BA5A 100%)',
               color: 'white',
-              padding: '1rem 2rem',
-              borderRadius: '8px',
+              padding: '1.125rem 2.5rem',
+              borderRadius: '12px',
               textDecoration: 'none',
               fontSize: '1.125rem',
-              fontWeight: 600,
+              fontWeight: 700,
               marginBottom: '1.5rem',
-              transition: 'background-color 0.2s'
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              boxShadow: '0 4px 12px rgba(37, 211, 102, 0.3)',
+              letterSpacing: '0.3px'
             }}
-            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#20BA5A'}
-            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#25D366'}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #20BA5A 0%, #1DA851 100%)'
+              e.currentTarget.style.transform = 'translateY(-3px)'
+              e.currentTarget.style.boxShadow = '0 8px 20px rgba(37, 211, 102, 0.4)'
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(135deg, #25D366 0%, #20BA5A 100%)'
+              e.currentTarget.style.transform = 'translateY(0)'
+              e.currentTarget.style.boxShadow = '0 4px 12px rgba(37, 211, 102, 0.3)'
+            }}
           >
             💬 WhatsApp Us
           </a>
-          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid #e5e7eb' }}>
-            <h4 style={{ marginBottom: '1rem', fontSize: '1rem' }}>Or Call Us</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
-              <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+          <div style={{ marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '2px solid #e2e8f0' }}>
+            <h4 style={{ marginBottom: '1rem', fontSize: '1rem', fontWeight: 600, color: '#64748b' }}>Or Call Us</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center' }}>
+              <a href="tel:+919826452400" style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 600, transition: 'all 0.2s', display: 'inline-block' }}
+                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.color = '#2563eb'; }}
+                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.color = '#3b82f6'; }}>
                 📞 +91 9826452400
               </a>
-              <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+              <a href="tel:+919827028266" style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 600, transition: 'all 0.2s', display: 'inline-block' }}
+                 onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.color = '#2563eb'; }}
+                 onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.color = '#3b82f6'; }}>
                 📞 +91 9827028266
               </a>
             </div>

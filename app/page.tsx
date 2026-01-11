@@ -69,11 +69,21 @@ export default function Home() {
     <>
       <header className="header">
         <div className="header-content">
-          <div>
-            <h1 className="logo">Jain Shree Motors</h1>
-            <div style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem' }}>
-              📞 <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none' }}>9826452400</a> | 
-              <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', marginLeft: '0.25rem' }}>9827028266</a>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
+            <img 
+              src="/logo.png" 
+              alt="Jain Shree Motors Logo" 
+              className="logo-image"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none'
+              }}
+            />
+            <div>
+              <h1 className="logo" style={{ margin: 0, fontSize: '1.5rem' }}>Jain Shree Motors</h1>
+              <div style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem' }}>
+                📞 <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none' }}>9826452400</a> | 
+                <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', marginLeft: '0.25rem' }}>9827028266</a>
+              </div>
             </div>
           </div>
           <Link href="/admin/login" className="admin-link">
@@ -190,17 +200,21 @@ export default function Home() {
         <div className="container">
           <h2 style={{ 
             textAlign: 'center', 
-            fontSize: '2rem', 
+            fontSize: '2.5rem', 
             marginBottom: '2rem',
-            fontWeight: 'bold',
-            color: '#111'
+            fontWeight: 700,
+            background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+            letterSpacing: '-0.5px'
           }}>
             About Our Shop
           </h2>
 
           {shopPhotos.length > 0 && (
             <div style={{ marginBottom: '3rem' }}>
-              <h3 style={{ textAlign: 'center', fontSize: '1.5rem', marginBottom: '1.5rem', color: '#333' }}>
+              <h3 style={{ textAlign: 'center', fontSize: '1.75rem', marginBottom: '1.5rem', color: '#1e293b', fontWeight: 700 }}>
                 Our Showroom
               </h3>
               <div style={{ 
@@ -211,12 +225,12 @@ export default function Home() {
                 margin: '0 auto'
               }}>
                 {shopPhotos.map((photo) => (
-                  <div key={photo._id} style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                  <div key={photo._id} style={{ borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', aspectRatio: '4/3' }}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                       src={photo.imageUrl}
                       alt="Jain Shree Motors Showroom"
-                      style={{ width: '100%', height: '250px', objectFit: 'cover' }}
+                      style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
                       onError={(e) => {
                         e.currentTarget.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="250" height="250"%3E%3Crect fill="%23e5e7eb" width="250" height="250"/%3E%3C/svg%3E'
                       }}
@@ -236,17 +250,25 @@ export default function Home() {
           }}>
             {/* Contact Information */}
             <div style={{ 
-              background: '#f9fafb', 
-              padding: '2rem', 
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+              padding: '2.5rem', 
+              borderRadius: '16px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
+              border: '2px solid #e2e8f0',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#111' }}>📞 Contact Us</h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)' }}></div>
+              <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', color: '#1e293b', fontWeight: 700 }}>📞 Contact Us</h3>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <a href="tel:+919826452400" style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 600, transition: 'all 0.2s', display: 'inline-block' }}
+                   onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.color = '#2563eb'; }}
+                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.color = '#3b82f6'; }}>
                   +91 9826452400
                 </a>
-                <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+                <a href="tel:+919827028266" style={{ color: '#3b82f6', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 600, transition: 'all 0.2s', display: 'inline-block' }}
+                   onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateX(4px)'; e.currentTarget.style.color = '#2563eb'; }}
+                   onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateX(0)'; e.currentTarget.style.color = '#3b82f6'; }}>
                   +91 9827028266
                 </a>
               </div>
@@ -254,12 +276,16 @@ export default function Home() {
 
             {/* Location */}
             <div style={{ 
-              background: '#f9fafb', 
-              padding: '2rem', 
-              borderRadius: '12px',
-              boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
+              background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)', 
+              padding: '2.5rem', 
+              borderRadius: '16px',
+              boxShadow: '0 8px 24px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04)',
+              border: '2px solid #e2e8f0',
+              position: 'relative',
+              overflow: 'hidden'
             }}>
-              <h3 style={{ fontSize: '1.25rem', marginBottom: '1rem', color: '#111' }}>📍 Visit Us</h3>
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: '4px', background: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%)' }}></div>
+              <h3 style={{ fontSize: '1.25rem', marginBottom: '1.25rem', color: '#1e293b', fontWeight: 700 }}>📍 Visit Us</h3>
               <LocationLink />
             </div>
           </div>
@@ -267,22 +293,27 @@ export default function Home() {
       </section>
 
       <footer style={{ 
-        background: '#fff', 
-        padding: '2rem 1rem', 
+        background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)', 
+        padding: '3rem 1rem', 
         marginTop: '3rem',
         textAlign: 'center',
-        borderTop: '1px solid #e5e7eb'
+        borderTop: '3px solid transparent',
+        borderImage: 'linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%) 1'
       }}>
-        <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>Contact Us</h3>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
-          <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+        <h3 style={{ marginBottom: '1.5rem', fontSize: '1.5rem', fontWeight: 700, color: '#fff' }}>Contact Us</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', alignItems: 'center', marginBottom: '2rem' }}>
+          <a href="tel:+919826452400" style={{ color: '#60a5fa', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 600, transition: 'all 0.2s', display: 'inline-block' }}
+             onMouseEnter={(e) => { e.currentTarget.style.color = '#93c5fd'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+             onMouseLeave={(e) => { e.currentTarget.style.color = '#60a5fa'; e.currentTarget.style.transform = 'translateY(0)'; }}>
             📞 +91 9826452400
           </a>
-          <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+          <a href="tel:+919827028266" style={{ color: '#60a5fa', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 600, transition: 'all 0.2s', display: 'inline-block' }}
+             onMouseEnter={(e) => { e.currentTarget.style.color = '#93c5fd'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+             onMouseLeave={(e) => { e.currentTarget.style.color = '#60a5fa'; e.currentTarget.style.transform = 'translateY(0)'; }}>
             📞 +91 9827028266
           </a>
         </div>
-        <p style={{ marginTop: '1.5rem', color: '#666', fontSize: '0.875rem' }}>
+        <p style={{ marginTop: '1.5rem', color: '#94a3b8', fontSize: '0.875rem', fontWeight: 500 }}>
           © {new Date().getFullYear()} Jain Shree Motors. All rights reserved.
         </p>
       </footer>
