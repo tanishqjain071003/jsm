@@ -118,25 +118,21 @@ export default function AdminDashboard() {
       <header className="header">
         <div className="header-content">
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '1rem', textDecoration: 'none' }}>
-            {logo?.imageUrl ? (
-              <img 
-                src={logo.imageUrl} 
-                alt="Jain Shree Motors Logo" 
-                className="logo-image"
-                onError={(e) => {
+            <img 
+              src={logo?.imageUrl || '/logo.png'} 
+              alt="Jain Shree Motors Logo" 
+              className="logo-image"
+              style={{ display: 'block' }}
+              onError={(e) => {
+                // If dynamic logo fails, try static logo
+                if (e.currentTarget.src !== window.location.origin + '/logo.png') {
+                  e.currentTarget.src = '/logo.png'
+                } else {
+                  // If static logo also fails, hide it
                   e.currentTarget.style.display = 'none'
-                }}
-              />
-            ) : (
-              <img 
-                src="/logo.png" 
-                alt="Jain Shree Motors Logo" 
-                className="logo-image"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none'
-                }}
-              />
-            )}
+                }
+              }}
+            />
             <span className="logo">Jain Shree Motors - Admin</span>
           </Link>
           <button onClick={handleLogout} className="button button-secondary">

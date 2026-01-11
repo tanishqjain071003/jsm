@@ -82,28 +82,21 @@ export default function Home() {
       <header className="header">
         <div className="header-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-            {(logo && logo.imageUrl) ? (
-              <img 
-                src={logo.imageUrl} 
-                alt="Jain Shree Motors Logo" 
-                className="logo-image"
-                style={{ display: 'block' }}
-                onError={(e) => {
-                  // Fallback to static logo if dynamic logo fails
+            <img 
+              src={logo?.imageUrl || '/logo.png'} 
+              alt="Jain Shree Motors Logo" 
+              className="logo-image"
+              style={{ display: 'block' }}
+              onError={(e) => {
+                // If dynamic logo fails, try static logo
+                if (e.currentTarget.src !== window.location.origin + '/logo.png') {
                   e.currentTarget.src = '/logo.png'
-                }}
-              />
-            ) : (
-              <img 
-                src="/logo.png" 
-                alt="Jain Shree Motors Logo" 
-                className="logo-image"
-                style={{ display: 'block' }}
-                onError={(e) => {
+                } else {
+                  // If static logo also fails, hide it
                   e.currentTarget.style.display = 'none'
-                }}
-              />
-            )}
+                }
+              }}
+            />
             <div>
               <h1 className="logo" style={{ margin: 0, fontSize: '1.5rem' }}>Jain Shree Motors</h1>
               <div style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem' }}>
