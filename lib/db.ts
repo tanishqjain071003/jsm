@@ -14,6 +14,10 @@ export interface Car {
   status: 'Available' | 'Sold'
   mainImage: string
   galleryImages: string[]
+  noOfOwner: string
+  color: string
+  insuranceType: 'Comprehensive' | 'No insurance' | 'Third party' | 'Zero Dep'
+  enginePower: number
   views: number
   createdAt: Date
   updatedAt: Date
@@ -21,10 +25,10 @@ export interface Car {
 
 export async function getCars(filter?: {
   search?: string
-  minPrice?: number
   maxPrice?: number
   year?: number
   fuelType?: string
+  noOfOwner?: string
   status?: 'Available' | 'Sold' | '' | null
 }) {
   try {
@@ -52,18 +56,22 @@ export async function getCars(filter?: {
       ]
     }
 
-    if (filter?.minPrice || filter?.maxPrice) {
-      query.price = {}
-      if (filter.minPrice) query.price.$gte = filter.minPrice
-      if (filter.maxPrice) query.price.$lte = filter.maxPrice
+    // Only maxPrice filter (minPrice removed)
+    if (filter?.maxPrice) {
+      query.price = { $lte: filter.maxPrice }
     }
 
+    // Year filter: show cars from selected year and all years after (>=)
     if (filter?.year) {
-      query.year = filter.year
+      query.year = { $gte: filter.year }
     }
 
     if (filter?.fuelType) {
       query.fuelType = filter.fuelType
+    }
+
+    if (filter?.noOfOwner) {
+      query.noOfOwner = { $regex: filter.noOfOwner, $options: 'i' }
     }
 
     const cars = await collection.find(query).sort({ createdAt: -1 }).toArray()

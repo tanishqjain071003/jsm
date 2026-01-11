@@ -131,6 +131,30 @@ export default function CarDetailPage() {
               <span className="spec-label">Status</span>
               <span className="spec-value">{car.status}</span>
             </div>
+            {car.noOfOwner && (
+              <div className="spec-item">
+                <span className="spec-label">No. of Owner</span>
+                <span className="spec-value">{car.noOfOwner}</span>
+              </div>
+            )}
+            {car.color && (
+              <div className="spec-item">
+                <span className="spec-label">Color</span>
+                <span className="spec-value">{car.color}</span>
+              </div>
+            )}
+            {car.insuranceType && (
+              <div className="spec-item">
+                <span className="spec-label">Insurance Type</span>
+                <span className="spec-value">{car.insuranceType}</span>
+              </div>
+            )}
+            {car.enginePower > 0 && (
+              <div className="spec-item">
+                <span className="spec-label">Engine Power</span>
+                <span className="spec-value">{car.enginePower} cc</span>
+              </div>
+            )}
           </div>
 
           {car.description && (
@@ -139,6 +163,25 @@ export default function CarDetailPage() {
               <p>{car.description}</p>
             </div>
           )}
+        </div>
+
+        <div style={{ 
+          background: '#fff', 
+          padding: '2rem', 
+          borderRadius: '12px', 
+          boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+          marginTop: '2rem',
+          textAlign: 'center'
+        }}>
+          <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>Contact Us</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
+            <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+              📞 +91 9826452400
+            </a>
+            <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+              📞 +91 9827028266
+            </a>
+          </div>
         </div>
       </div>
     </>

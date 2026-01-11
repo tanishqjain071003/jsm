@@ -12,17 +12,17 @@ export async function GET(request: NextRequest) {
     const statusParam = searchParams.get('status')
     const filter: {
       search?: string
-      minPrice?: number
       maxPrice?: number
       year?: number
       fuelType?: string
+      noOfOwner?: string
       status?: 'Available' | 'Sold' | '' | null
     } = {
       search: searchParams.get('search') || undefined,
-      minPrice: searchParams.get('minPrice') ? Number(searchParams.get('minPrice')) : undefined,
       maxPrice: searchParams.get('maxPrice') ? Number(searchParams.get('maxPrice')) : undefined,
       year: searchParams.get('year') ? Number(searchParams.get('year')) : undefined,
       fuelType: searchParams.get('fuelType') || undefined,
+      noOfOwner: searchParams.get('noOfOwner') || undefined,
       status: statusParam === '' ? '' : (statusParam === 'Available' || statusParam === 'Sold' ? statusParam : undefined),
     }
 
@@ -58,6 +58,10 @@ export async function POST(request: NextRequest) {
     const price = Number(formData.get('price'))
     const description = formData.get('description') as string
     const status = formData.get('status') as 'Available' | 'Sold'
+    const noOfOwner = formData.get('noOfOwner') as string
+    const color = formData.get('color') as string
+    const insuranceType = formData.get('insuranceType') as 'Comprehensive' | 'No insurance' | 'Third party' | 'Zero Dep'
+    const enginePower = Number(formData.get('enginePower'))
 
     const mainImageFile = formData.get('mainImage') as File
     if (!mainImageFile || mainImageFile.size === 0) {
@@ -98,6 +102,10 @@ export async function POST(request: NextRequest) {
       status,
       mainImage,
       galleryImages,
+      noOfOwner: noOfOwner || '',
+      color: color || '',
+      insuranceType: insuranceType || 'No insurance',
+      enginePower: enginePower || 0,
     })
 
     return NextResponse.json(car, { status: 201 })

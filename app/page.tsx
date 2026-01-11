@@ -9,10 +9,10 @@ export default function Home() {
   const [loading, setLoading] = useState(true)
   const [filters, setFilters] = useState({
     search: '',
-    minPrice: '',
     maxPrice: '',
     year: '',
     fuelType: '',
+    noOfOwner: '',
   })
 
   const fetchCars = useCallback(async () => {
@@ -20,10 +20,10 @@ export default function Home() {
     try {
       const params = new URLSearchParams()
       if (filters.search) params.append('search', filters.search)
-      if (filters.minPrice) params.append('minPrice', filters.minPrice)
       if (filters.maxPrice) params.append('maxPrice', filters.maxPrice)
       if (filters.year) params.append('year', filters.year)
       if (filters.fuelType) params.append('fuelType', filters.fuelType)
+      if (filters.noOfOwner) params.append('noOfOwner', filters.noOfOwner)
 
       const response = await fetch(`/api/cars?${params.toString()}`)
       const data = await response.json()
@@ -53,7 +53,13 @@ export default function Home() {
     <>
       <header className="header">
         <div className="header-content">
-          <h1 className="logo">Jain Shree Motors</h1>
+          <div>
+            <h1 className="logo">Jain Shree Motors</h1>
+            <div style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem' }}>
+              📞 <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none' }}>9826452400</a> | 
+              <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', marginLeft: '0.25rem' }}>9827028266</a>
+            </div>
+          </div>
           <Link href="/admin/login" className="admin-link">
             Admin
           </Link>
@@ -71,15 +77,6 @@ export default function Home() {
           />
           <div className="filters">
             <div className="filter-group">
-              <label>Min Price (₹)</label>
-              <input
-                type="number"
-                placeholder="Min"
-                value={filters.minPrice}
-                onChange={(e) => handleFilterChange('minPrice', e.target.value)}
-              />
-            </div>
-            <div className="filter-group">
               <label>Max Price (₹)</label>
               <input
                 type="number"
@@ -89,14 +86,14 @@ export default function Home() {
               />
             </div>
             <div className="filter-group">
-              <label>Year</label>
+              <label>Year (and after)</label>
               <select
                 value={filters.year}
                 onChange={(e) => handleFilterChange('year', e.target.value)}
               >
                 <option value="">All Years</option>
                 {years.map(year => (
-                  <option key={year} value={year}>{year}</option>
+                  <option key={year} value={year}>{year} and after</option>
                 ))}
               </select>
             </div>
@@ -112,6 +109,15 @@ export default function Home() {
                 <option value="Electric">Electric</option>
                 <option value="Hybrid">Hybrid</option>
               </select>
+            </div>
+            <div className="filter-group">
+              <label>No. of Owner</label>
+              <input
+                type="text"
+                placeholder="e.g., First hand"
+                value={filters.noOfOwner}
+                onChange={(e) => handleFilterChange('noOfOwner', e.target.value)}
+              />
             </div>
           </div>
         </div>
@@ -156,6 +162,27 @@ export default function Home() {
           </div>
         )}
       </main>
+
+      <footer style={{ 
+        background: '#fff', 
+        padding: '2rem 1rem', 
+        marginTop: '3rem',
+        textAlign: 'center',
+        borderTop: '1px solid #e5e7eb'
+      }}>
+        <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>Contact Us</h3>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'center' }}>
+          <a href="tel:+919826452400" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+            📞 +91 9826452400
+          </a>
+          <a href="tel:+919827028266" style={{ color: '#2563eb', textDecoration: 'none', fontSize: '1.125rem', fontWeight: 500 }}>
+            📞 +91 9827028266
+          </a>
+        </div>
+        <p style={{ marginTop: '1.5rem', color: '#666', fontSize: '0.875rem' }}>
+          © {new Date().getFullYear()} Jain Shree Motors. All rights reserved.
+        </p>
+      </footer>
     </>
   )
 }

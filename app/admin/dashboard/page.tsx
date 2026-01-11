@@ -155,6 +155,9 @@ export default function AdminDashboard() {
                     <div style={{ fontSize: '0.875rem', color: '#666', marginTop: '0.25rem' }}>
                       {car.year} • {car.fuelType} • {car.status}
                     </div>
+                    <div style={{ fontSize: '0.875rem', color: '#2563eb', marginTop: '0.5rem', fontWeight: 500 }}>
+                      👁️ {car.views || 0} {car.views === 1 ? 'view' : 'views'}
+                    </div>
                   </div>
                   <div className="car-list-actions">
                     <button
@@ -240,6 +243,10 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
     price: car?.price || 0,
     description: car?.description || '',
     status: car?.status || 'Available',
+    noOfOwner: car?.noOfOwner || '',
+    color: car?.color || '',
+    insuranceType: car?.insuranceType || 'No insurance',
+    enginePower: car?.enginePower || 0,
   })
   const [mainImage, setMainImage] = useState<File | null>(null)
   const [galleryImages, setGalleryImages] = useState<File[]>([])
@@ -262,6 +269,10 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         price: car.price,
         description: car.description,
         status: car.status,
+        noOfOwner: car.noOfOwner || '',
+        color: car.color || '',
+        insuranceType: car.insuranceType || 'No insurance',
+        enginePower: car.enginePower || 0,
       })
       setMainImagePreview(car.mainImage)
       setExistingGallery(car.galleryImages || [])
@@ -276,6 +287,10 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
         price: 0,
         description: '',
         status: 'Available',
+        noOfOwner: '',
+        color: '',
+        insuranceType: 'No insurance',
+        enginePower: 0,
       })
       setMainImagePreview('')
       setExistingGallery([])
@@ -289,7 +304,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
     const { name, value } = e.target
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'year' || name === 'mileage' || name === 'price' ? Number(value) : value,
+      [name]: name === 'year' || name === 'mileage' || name === 'price' || name === 'enginePower' ? Number(value) : value,
     }))
   }
 
@@ -393,6 +408,10 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
       formDataToSend.append('price', formData.price.toString())
       formDataToSend.append('description', formData.description)
       formDataToSend.append('status', formData.status)
+      formDataToSend.append('noOfOwner', formData.noOfOwner)
+      formDataToSend.append('color', formData.color)
+      formDataToSend.append('insuranceType', formData.insuranceType)
+      formDataToSend.append('enginePower', formData.enginePower.toString())
 
       if (car?._id) {
         // Update
@@ -572,6 +591,58 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
             <option value="Available">Available</option>
             <option value="Sold">Sold</option>
           </select>
+        </div>
+
+        <div>
+          <label htmlFor="noOfOwner">No. of Owner</label>
+          <input
+            type="text"
+            id="noOfOwner"
+            name="noOfOwner"
+            value={formData.noOfOwner}
+            onChange={handleInputChange}
+            placeholder="e.g., First hand, Second hand"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="color">Color</label>
+          <input
+            type="text"
+            id="color"
+            name="color"
+            value={formData.color}
+            onChange={handleInputChange}
+            placeholder="e.g., White, Black, Red"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="insuranceType">Insurance Type</label>
+          <select
+            id="insuranceType"
+            name="insuranceType"
+            value={formData.insuranceType}
+            onChange={handleInputChange}
+          >
+            <option value="Comprehensive">Comprehensive</option>
+            <option value="No insurance">No insurance</option>
+            <option value="Third party">Third party</option>
+            <option value="Zero Dep">Zero Dep</option>
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="enginePower">Engine Power (cc)</label>
+          <input
+            type="number"
+            id="enginePower"
+            name="enginePower"
+            value={formData.enginePower}
+            onChange={handleInputChange}
+            min="0"
+            placeholder="e.g., 1200"
+          />
         </div>
       </div>
 

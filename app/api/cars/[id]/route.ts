@@ -53,6 +53,10 @@ export async function PUT(
       price: Number(formData.get('price')),
       description: formData.get('description') as string,
       status: formData.get('status') as 'Available' | 'Sold',
+      noOfOwner: formData.get('noOfOwner') as string,
+      color: formData.get('color') as string,
+      insuranceType: formData.get('insuranceType') as 'Comprehensive' | 'No insurance' | 'Third party' | 'Zero Dep',
+      enginePower: Number(formData.get('enginePower')),
     }
 
     const mainImageFile = formData.get('mainImage') as File
