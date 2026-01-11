@@ -82,13 +82,15 @@ export default function Home() {
       <header className="header">
         <div className="header-content">
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flex: 1 }}>
-            {logo?.imageUrl ? (
+            {(logo && logo.imageUrl) ? (
               <img 
                 src={logo.imageUrl} 
                 alt="Jain Shree Motors Logo" 
                 className="logo-image"
+                style={{ display: 'block' }}
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none'
+                  // Fallback to static logo if dynamic logo fails
+                  e.currentTarget.src = '/logo.png'
                 }}
               />
             ) : (
@@ -96,6 +98,7 @@ export default function Home() {
                 src="/logo.png" 
                 alt="Jain Shree Motors Logo" 
                 className="logo-image"
+                style={{ display: 'block' }}
                 onError={(e) => {
                   e.currentTarget.style.display = 'none'
                 }}

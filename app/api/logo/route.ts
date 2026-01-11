@@ -8,13 +8,11 @@ export const maxDuration = 60
 export async function GET() {
   try {
     const logo = await getLogo()
-    return NextResponse.json(logo)
+    // Return null if no logo exists, not an error
+    return NextResponse.json(logo || null)
   } catch (error) {
     console.error('Error fetching logo:', error)
-    return NextResponse.json(
-      { error: 'Failed to fetch logo' },
-      { status: 500 }
-    )
+    return NextResponse.json(null)
   }
 }
 
