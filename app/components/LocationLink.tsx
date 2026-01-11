@@ -1,8 +1,15 @@
 'use client'
 
 export default function LocationLink() {
-  const shopLocation = process.env.NEXT_PUBLIC_SHOP_LOCATION || 'Jain Shree Motors'
-  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(shopLocation)}`
+  const shopLocation = process.env.NEXT_PUBLIC_SHOP_LOCATION || '22.735132,75.901556'
+  
+  // Parse coordinates (format: "latitude,longitude" or "lat,lng")
+  const coordinates = shopLocation.split(',').map(coord => coord.trim())
+  const latitude = coordinates[0]
+  const longitude = coordinates[1]
+  
+  // Google Maps URL using coordinates
+  const mapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}`
 
   return (
     <>
@@ -21,7 +28,7 @@ export default function LocationLink() {
         📍 View on Google Maps →
       </a>
       <p style={{ color: '#666', marginTop: '0.5rem', fontSize: '0.875rem' }}>
-        {shopLocation}
+        Jain Shree Motors
       </p>
     </>
   )

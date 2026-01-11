@@ -43,7 +43,7 @@ ADMIN_PASSWORD=your-secure-password-here
 JWT_SECRET=change-this-to-a-random-long-string-at-least-32-characters
 NEXT_PUBLIC_BASE_URL=http://localhost:3000
 BLOB_READ_WRITE_TOKEN=your-vercel-blob-token
-NEXT_PUBLIC_SHOP_LOCATION=Your Shop Address, City, State
+NEXT_PUBLIC_SHOP_LOCATION=22.735132,75.901556
 ```
 
 **⚠️ Important:**
@@ -51,6 +51,7 @@ NEXT_PUBLIC_SHOP_LOCATION=Your Shop Address, City, State
 - Replace `change-this-to-a-random-long-string...` with a random secret (you can use an online generator or just type random characters)
 - For Atlas: Replace `username`, `password`, and `cluster` with your actual MongoDB Atlas credentials
 - **For Vercel Blob**: Get your token from [Vercel Dashboard](https://vercel.com/dashboard) → Settings → Environment Variables, or use `vercel env pull` command. For local development, you can use `vercel env pull .env.local` or get the token from Vercel dashboard under your project settings.
+- **For Shop Location**: Add coordinates in format `latitude,longitude` (e.g., `22.735132,75.901556`). To get coordinates: Open Google Maps, right-click on your shop location, and copy the coordinates.
 
 #### Step 3: Set Up MongoDB
 
@@ -310,7 +311,7 @@ Create a `.env.local` file with these variables:
 | `JWT_SECRET` | Secret key for authentication tokens (use a long random string) | `a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6` |
 | `NEXT_PUBLIC_BASE_URL` | Your website URL | `http://localhost:3000` (dev) or `https://yourdomain.com` (prod) |
 | `BLOB_READ_WRITE_TOKEN` | Vercel Blob storage token (get from Vercel dashboard) | `vercel_blob_rw_xxx...` |
-| `NEXT_PUBLIC_SHOP_LOCATION` | Shop address for Google Maps link | `123 Main Street, City, State` |
+| `NEXT_PUBLIC_SHOP_LOCATION` | Shop coordinates for Google Maps (latitude,longitude) | `22.735132,75.901556` |
 
 **Security Note:** Never commit `.env.local` to Git. It's already in `.gitignore`.
 
