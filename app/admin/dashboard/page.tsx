@@ -534,6 +534,7 @@ function CarForm({ car, onSave, onCancel }: { car: Car | null; onSave: () => voi
             <option value="Diesel">Diesel</option>
             <option value="Electric">Electric</option>
             <option value="Hybrid">Hybrid</option>
+            <option value="CNG">CNG</option>
           </select>
         </div>
 
